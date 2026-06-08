@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>予約管理 | Salon Lumière デモ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1><span id="salon-name">Salon</span><span class="demo-badge">デモ</span></h1>
+    <nav class="nav-links">
+      <a href="index.html">経営ダッシュボード</a>
+      <a href="reservations.html" class="active">予約管理</a>
+      <a href="book.html" target="_blank" rel="noopener" class="nav-external">顧客向けフォーム ↗</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="day-toolbar">
+      <button id="prev-day" type="button" aria-label="前日">‹</button>
+      <input type="date" id="day-picker" value="2026-05-25">
+      <button id="next-day" type="button" aria-label="翌日">›</button>
+      <button id="today-btn" type="button">今日</button>
+      <span class="day-label" id="day-label"></span>
+      <span class="period-hint" id="day-count"></span>
+
+      <span class="spacer"></span>
+
+      <div class="view-toggle" role="tablist">
+        <button id="view-grid" type="button" class="active" data-view="grid">日</button>
+        <button id="view-week" type="button" data-view="week">週</button>
+        <button id="view-month" type="button" data-view="month">月</button>
+        <button id="view-list" type="button" data-view="list">リスト</button>
+      </div>
+    </div>
+
+    <p class="period-hint" id="closed-hint" hidden>本日は定休日です（火曜定休）</p>
+
+    <div id="timegrid-view" class="timegrid-view">
+      <div class="timegrid" id="timegrid"></div>
+      <p class="period-hint" style="margin-top:0.75rem">
+        空きコマをクリックすると予約追加モーダルが開きます。既存予約のクリックで詳細表示。指名予約は左に濃いラインが入ります。
+      </p>
+    </div>
+
+    <div id="week-view" hidden>
+      <div class="week-grid" id="week-grid"></div>
+      <p class="period-hint" style="margin-top:0.75rem">
+        日付ヘッダーをクリックでその日のタイムグリッドへ。セラピスト色：
+        <span class="legend-dot stylist-0"></span> 田中
+        <span class="legend-dot stylist-1"></span> 鈴木
+        <span class="legend-dot stylist-2"></span> 佐藤
+      </p>
+    </div>
+
+    <div id="month-view" hidden>
+      <div class="month-grid" id="month-grid"></div>
+      <p class="period-hint" style="margin-top:0.75rem">
+        セルをクリックでその日のタイムグリッドへ。売上は <code>済</code> 予約のみ集計。
+      </p>
+    </div>
+
+    <div id="list-view" hidden>
+      <div class="filters">
+        <div class="field">
+          <label for="filter-stylist">セラピスト</label>
+          <select id="filter-stylist">
+            <option value="">すべて</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="filter-status">ステータス</label>
+          <select id="filter-status">
+            <option value="">すべて</option>
+            <option value="予定">予定</option>
+            <option value="済">済</option>
+            <option value="キャンセル">キャンセル</option>
+            <option value="無断">無断</option>
+          </select>
+        </div>
+        <span class="period-hint" id="res-count">0件</span>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table" id="res-table">
+          <thead>
+            <tr>
+              <th>日付</th>
+              <th>開始</th>
+              <th>顧客</th>
+              <th>メニュー</th>
+              <th>時間</th>
+              <th>担当</th>
+              <th>指名</th>
+              <th>売上</th>
+              <th>区分</th>
+              <th>状態</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- 予約追加モーダル -->
+  <div id="reservation-modal" class="modal" hidden>
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-head">
+        <h3 id="modal-title">予約を追加</h3>
+        <button class="modal-close" type="button" id="modal-close" aria-label="閉じる">×</button>
+      </div>
+      <form id="reservation-form" class="modal-body">
+        <div class="form-row">
+          <label>日付</label>
+          <div id="modal-date" class="form-static"></div>
+        </div>
+        <div class="form-row two-col">
+          <div>
+            <label for="modal-stylist">担当セラピスト</label>
+            <select id="modal-stylist" required></select>
+          </div>
+          <div>
+            <label for="modal-time">開始時刻</label>
+            <select id="modal-time" required></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="modal-customer">顧客</label>
+          <select id="modal-customer" required>
+            <option value="">— 選択してください —</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="modal-menu">メニュー</label>
+          <select id="modal-menu" required>
+            <option value="">— 選択してください —</option>
+          </select>
+        </div>
+        <div class="form-row two-col">
+          <div>
+            <label>所要時間 / 終了時刻</label>
+            <div id="modal-duration" class="form-static">—</div>
+          </div>
+          <div>
+            <label class="checkbox-label">
+              <input type="checkbox" id="modal-nominated">
+              指名予約
+            </label>
+          </div>
+        </div>
+        <div class="form-error" id="modal-error" hidden></div>
+        <div class="modal-actions">
+          <button type="button" id="modal-cancel">キャンセル</button>
+          <button type="submit" class="btn-primary">予約を追加</button>
+        </div>
+        <p class="period-hint" style="margin-top:0.75rem">
+          ※ デモのため追加した予約はメモリ上のみ。ページをリロードすると消えます。
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- 予約詳細モーダル -->
+  <div id="detail-modal" class="modal" hidden>
+    <div class="modal-backdrop" id="detail-backdrop"></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+      <div class="modal-head">
+        <h3 id="detail-title">予約の詳細</h3>
+        <button class="modal-close" type="button" id="detail-close" aria-label="閉じる">×</button>
+      </div>
+      <div class="modal-body">
+        <dl class="detail-list">
+          <dt>顧客</dt><dd id="detail-customer">—</dd>
+          <dt>日時</dt><dd id="detail-time">—</dd>
+          <dt>担当</dt><dd id="detail-stylist">—</dd>
+          <dt>メニュー</dt><dd id="detail-menu">—</dd>
+          <dt>売上</dt><dd id="detail-sales">—</dd>
+          <dt>区分</dt><dd id="detail-visit-type">—</dd>
+          <dt>ステータス</dt><dd id="detail-status">—</dd>
+        </dl>
+        <div class="modal-actions">
+          <button type="button" id="detail-delete" class="btn-danger" hidden>削除</button>
+          <button type="button" id="detail-cancel-status" class="btn-danger" hidden>キャンセル扱いに変更</button>
+          <button type="button" id="detail-close-btn">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>リラクゼーションサロン 予約・経営ダッシュボード デモ（静的HTML / サンプルデータ）</footer>
+
+  <script src="js/data/settings.js"></script>
+  <script src="js/data/menus.js"></script>
+  <script src="js/data/stylists.js"></script>
+  <script src="js/data/customers.js"></script>
+  <script src="js/data/reservations.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/reservations-page.js"></script>
+</body>
+</html>

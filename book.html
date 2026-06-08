@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>ご予約 | Salon Lumière デモ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="book-page">
+  <header class="book-header">
+    <h1><span id="salon-name">Salon</span></h1>
+    <p class="book-sub">オンライン予約フォーム</p>
+  </header>
+
+  <main class="book-main">
+    <div class="book-card" id="book-form-wrap">
+      <h2>ご予約内容</h2>
+      <p class="book-intro">下記フォームよりご希望の日時をお選びください。<br>ご予約は仮受付となり、確認後ご連絡いたします。</p>
+
+      <form id="book-form" class="book-form" novalidate>
+        <div class="form-row">
+          <label for="b-name">お名前 <span class="required">*</span></label>
+          <input type="text" id="b-name" placeholder="例：山田 花子" required>
+        </div>
+
+        <div class="form-row">
+          <label for="b-phone">お電話番号</label>
+          <input type="tel" id="b-phone" placeholder="例：090-1234-5678" pattern="[0-9\-]{10,15}">
+          <small class="form-hint">確認のご連絡に使用します（任意）</small>
+        </div>
+
+        <div class="form-row two-col">
+          <div>
+            <label for="b-date">ご希望日 <span class="required">*</span></label>
+            <input type="date" id="b-date" required>
+            <small class="form-hint" id="b-date-hint">火曜定休</small>
+          </div>
+          <div>
+            <label for="b-time">ご希望時刻 <span class="required">*</span></label>
+            <select id="b-time" required>
+              <option value="">— 選択 —</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="b-menu">ご希望メニュー <span class="required">*</span></label>
+          <select id="b-menu" required>
+            <option value="">— 選択 —</option>
+          </select>
+          <small class="form-hint" id="b-menu-hint">所要時間・料金はメニューを選ぶと表示されます</small>
+        </div>
+
+        <div class="form-row">
+          <label for="b-stylist">担当ご指名</label>
+          <select id="b-stylist">
+            <option value="">指名なし（おまかせ）</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label for="b-notes">ご要望・備考</label>
+          <textarea id="b-notes" rows="3" placeholder="アレルギー、ご希望のスタイルなど"></textarea>
+        </div>
+
+        <div class="form-error" id="b-error" hidden></div>
+
+        <div class="book-summary" id="b-summary" hidden>
+          <h3>ご予約内容の確認</h3>
+          <dl>
+            <dt>日時</dt><dd id="b-sum-time"></dd>
+            <dt>メニュー</dt><dd id="b-sum-menu"></dd>
+            <dt>担当</dt><dd id="b-sum-stylist"></dd>
+            <dt>料金</dt><dd id="b-sum-price"></dd>
+          </dl>
+        </div>
+
+        <button type="submit" class="btn-primary book-submit">この内容で予約する</button>
+        <p class="book-note">※ デモのため、送信内容はメモリ上のみに保存され、ページ再読み込みで消えます。</p>
+      </form>
+    </div>
+
+    <div class="book-card book-success" id="book-success" hidden>
+      <div class="success-icon">✓</div>
+      <h2>ご予約ありがとうございました</h2>
+      <p>ご予約内容を確認のうえ、担当者よりご連絡いたします。</p>
+      <dl id="book-success-details" class="success-details"></dl>
+      <button type="button" class="btn-secondary" id="book-again">別の予約を入れる</button>
+    </div>
+  </main>
+
+  <footer>Salon Lumière｜オンライン予約デモ（静的HTML / サンプルデータ）</footer>
+
+  <script src="js/data/settings.js"></script>
+  <script src="js/data/menus.js"></script>
+  <script src="js/data/stylists.js"></script>
+  <script src="js/data/customers.js"></script>
+  <script src="js/data/reservations.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/book-page.js"></script>
+</body>
+</html>

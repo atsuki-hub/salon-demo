@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>経営ダッシュボード | Salon Lumière デモ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+
+
+
+
+
+
+
+
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <h1><span id="salon-name">Salon</span><span class="demo-badge">デモ</span></h1>
+    <nav class="nav-links">
+      <a href="index.html" class="active">経営ダッシュボード</a>
+      <a href="reservations.html">予約管理</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="toolbar">
+      <div>
+        <label for="period-preset">集計期間</label>
+        <select id="period-preset">
+          <option value="thisMonth">今月（2026年5月）</option>
+          <option value="lastMonth">先月（2026年4月）</option>
+          <option value="last3">直近3ヶ月</option>
+          <option value="all" selected>全期間（6ヶ月）</option>
+        </select>
+      </div>
+      <div>
+        <label for="stylist-filter">スタイリスト</label>
+        <select id="stylist-filter">
+          <option value="" selected>すべて（サロン全体）</option>
+        </select>
+      </div>
+      <span class="period-hint" id="period-label"></span>
+      <span class="filter-badge" id="filter-badge" hidden></span>
+    </div>
+
+    <!-- 売上 -->
+    <section>
+      <h2>売上</h2>
+      <div class="metric-grid">
+        <div class="card">
+          <div class="label">当月売上（2026年5月）</div>
+          <div class="value" id="m1-this">—</div>
+          <div class="mom" id="m1-mom">前月比 —</div>
+        </div>
+        <div class="card">
+          <div class="label">技術客単価</div>
+          <div class="value" id="m2-tech">—</div>
+          <div class="sub" id="m2-count">—</div>
+        </div>
+        <div class="card">
+          <div class="label">総客単価</div>
+          <div class="value" id="m2-total">—</div>
+        </div>
+        <div class="card">
+          <div class="label">店販比率</div>
+          <div class="value" id="m3">—</div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-box wide">
+          <h3 id="m1-title">M1 売上推移（月次）</h3>
+          <canvas id="chart-m1"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- 顧客 -->
+    <section>
+      <h2>顧客・リピート</h2>
+      <div class="metric-grid">
+        <div class="card">
+          <div class="label">新規来店</div>
+          <div class="value" id="m4-new">—</div>
+        </div>
+        <div class="card">
+          <div class="label">再来来店</div>
+          <div class="value" id="m4-repeat">—</div>
+        </div>
+        <div class="card">
+          <div class="label">M6 平均再来周期</div>
+          <div class="value" id="m6">—</div>
+        </div>
+        <div class="card small">
+          <div class="label">M7 累積リピート率（補助）</div>
+          <div class="value" id="m7">—</div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-box">
+          <h3>M4 新規／再来 構成</h3>
+          <canvas id="chart-m4"></canvas>
+        </div>
+        <div class="chart-box">
+          <h3>M5 新規客90日定着率（初来店月別）</h3>
+          <canvas id="chart-m5"></canvas>
+          <p class="period-hint" style="margin-top:0.75rem">直近3ヶ月は90日未経過のため「集計中」</p>
+        </div>
+      </div>
+      <h3 style="font-size:0.95rem;margin:1.5rem 0 0.75rem;color:var(--muted)">
+        M8 失客アラート（<span id="m8-count">0</span>・閾値90日）
+      </h3>
+      <div class="table-wrap">
+        <table class="data-table" id="m8-table">
+          <thead>
+            <tr>
+              <th>氏名</th>
+              <th>前回来店日</th>
+              <th>経過日数</th>
+              <th>前回担当</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- スタイリスト -->
+    <section>
+      <h2>スタイリスト</h2>
+      <div class="metric-grid">
+        <div class="card">
+          <div class="label" id="m9-label">M9 指名率（サロン全体）</div>
+          <div class="value" id="m9-salon">—</div>
+        </div>
+        <div class="card">
+          <div class="label" id="m12-label">M12 席稼働率</div>
+          <div class="value" id="m12-seat">—</div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-box">
+          <h3>M9 スタイリスト別 指名率</h3>
+          <canvas id="chart-m9"></canvas>
+        </div>
+        <div class="chart-box">
+          <h3>M10 スタイリスト別 売上</h3>
+          <canvas id="chart-m10"></canvas>
+        </div>
+        <div class="chart-box">
+          <h3>M11 スタイリスト別 客単価</h3>
+          <canvas id="chart-m11"></canvas>
+        </div>
+        <div class="chart-box">
+          <h3>M12 スタイリスト別 稼働率</h3>
+          <canvas id="chart-m12"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- メニュー -->
+    <section>
+      <h2>メニュー</h2>
+      <div class="chart-row">
+        <div class="chart-box">
+          <h3>M13 メニューカテゴリ別 技術売上構成</h3>
+          <canvas id="chart-m13"></canvas>
+        </div>
+        <div class="chart-box">
+          <h3>M14 メニュー別 時間あたり売上</h3>
+          <canvas id="chart-m14"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- スタイリスト比較表 -->
+    <section>
+      <h2>スタイリスト別サマリー</h2>
+      <p class="period-hint" style="margin-bottom:0.75rem">
+        集計期間内のスタイリスト別実績。リピート率・定着率・再来周期は担当ベース（その担当者の予約のみを対象）。
+      </p>
+      <div class="table-wrap">
+        <table class="data-table comparison-table" id="comparison-table">
+          <thead>
+            <tr>
+              <th>対象</th>
+              <th class="num">予約件数</th>
+              <th class="num">売上</th>
+              <th class="num">客単価</th>
+              <th class="num">指名率</th>
+              <th class="num">リピート率</th>
+              <th class="num">90日定着率</th>
+              <th class="num">平均再来周期</th>
+              <th class="num">稼働率</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>美容サロン 予約・経営ダッシュボード デモ（静的HTML / サンプルデータ）</footer>
+
+  <script src="js/data/settings.js"></script>
+  <script src="js/data/menus.js"></script>
+  <script src="js/data/stylists.js"></script>
+  <script src="js/data/customers.js"></script>
+  <script src="js/data/reservations.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/metrics/sales.js"></script>
+  <script src="js/metrics/customers.js"></script>
+  <script src="js/metrics/stylists.js"></script>
+  <script src="js/metrics/menus.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
