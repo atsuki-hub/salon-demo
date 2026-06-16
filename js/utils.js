@@ -141,3 +141,9 @@ function periodPresets() {
 function filterByPeriod(items, start, end, dateField = 'date') {
   return items.filter((item) => inRange(item[dateField], start, end));
 }
+
+// Reference "today" derived from data — used as default in metric functions
+const DEMO_TODAY = (() => {
+  const allDates = RESERVATIONS.map(r => r.date).sort();
+  return allDates[allDates.length - 1] || fmtDate(new Date());
+})();

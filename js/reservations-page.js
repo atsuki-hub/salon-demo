@@ -747,9 +747,13 @@ function renderListView() {
     return;
   }
 
+  let totalSales = 0;
+  let doneCount = 0;
   list.forEach((r) => {
     const tr = document.createElement('tr');
     tr.className = 'status-' + r.status;
+    tr.style.cursor = 'pointer';
+    tr.title = 'クリックで詳細表示';
     tr.innerHTML = `
       <td>${r.date}</td>
       <td>${r.startTime}</td>
@@ -762,8 +766,22 @@ function renderListView() {
       <td>${r.visitType}</td>
       <td><span class="badge badge-${r.status}">${r.status}</span></td>
     `;
+    tr.addEventListener('click', () => openDetailModal(r));
+    if (r.status === '済') { totalSales += r.techSales + r.retailSales; doneCount++; }
     tbody.appendChild(tr);
   });
+
+  // Summary row
+  if (doneCount > 0) {
+    const sumTr = document.createElement('tr');
+    sumTr.className = 'row-total';
+    sumTr.innerHTML = `
+      <td colspan="7" style="text-align:right;font-size:0.82rem;color:var(--muted)">完了${doneCount}件の売上合計</td>
+      <td style="font-weight:600">${formatYen(totalSales)}</td>
+      <td colspan="2"></td>
+    `;
+    tbody.appendChild(sumTr);
+  }
 }
 
 function initPage() {

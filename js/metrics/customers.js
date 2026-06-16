@@ -14,7 +14,7 @@ function calcM4(reservations, start, end) {
   };
 }
 
-function calcM5(reservations, todayStr = '2026-05-25') {
+function calcM5(reservations, todayStr = DEMO_TODAY) {
   const done = getCompleted(reservations);
   const visitsByCustomer = {};
   done.forEach((r) => {
@@ -103,7 +103,7 @@ function calcM7(reservations) {
   return totalCustomers ? repeaters / totalCustomers : 0;
 }
 
-function calcM8(reservations, thresholdDays = SETTINGS.churnThresholdDays, todayStr = '2026-05-25') {
+function calcM8(reservations, thresholdDays = SETTINGS.churnThresholdDays, todayStr = DEMO_TODAY) {
   const done = getCompleted(reservations);
   const lastVisit = {};
   const lastStylist = {};
