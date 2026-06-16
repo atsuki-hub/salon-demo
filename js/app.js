@@ -370,6 +370,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('salon-name').textContent = SETTINGS.salonName;
   initPeriodOptions();
   initStylistFilter();
+
+  // Show data range hint
+  const allDates = RESERVATIONS.map(r => r.date).sort();
+  if (allDates.length > 0) {
+    const hintEl = document.getElementById('data-range-hint');
+    if (hintEl) hintEl.textContent = `データ: ${allDates[0]} 〜 ${allDates[allDates.length - 1]}`;
+  }
+
   document.getElementById('period-preset').addEventListener('change', renderDashboard);
   document.getElementById('stylist-filter').addEventListener('change', renderDashboard);
   renderDashboard();

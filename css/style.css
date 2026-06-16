@@ -430,7 +430,7 @@ section h2 {
 
 .timegrid {
   display: grid;
-  grid-template-columns: 72px repeat(3, 1fr);
+  grid-template-columns: 72px repeat(var(--stylist-count, 3), 1fr);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;

@@ -117,6 +117,7 @@ function updateViewLabel(dateStr) {
 function renderTimegrid(dateStr, todays, isClosed) {
   const grid = document.getElementById('timegrid');
   grid.innerHTML = '';
+  grid.style.setProperty('--stylist-count', STYLISTS.length);
 
   const openMin = timeToMin(SETTINGS.openTime);
   const closeMin = timeToMin(SETTINGS.closeTime);

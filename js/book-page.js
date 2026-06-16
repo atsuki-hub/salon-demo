@@ -14,14 +14,18 @@ function addMinToTime(t, n) {
 }
 
 function defaultDate() {
-  // 今日(=2026-05-25 in demo)以降の直近開店日
-  const today = new Date('2026-05-25T12:00:00');
+  // Start from DEMO_TODAY (derived from data) and find first non-closed day
+  const base = parseDate(DEMO_TODAY);
   for (let i = 0; i < 7; i++) {
-    const d = new Date(today);
+    const d = new Date(base);
     d.setDate(d.getDate() + i);
     if (!SETTINGS.closedDays.includes(d.getDay())) return fmtDate(d);
   }
-  return fmtDate(today);
+  return DEMO_TODAY;
+}
+
+function closedDayLabel() {
+  return SETTINGS.closedDays.map(d => WEEKDAY[d] + '曜').join('・') + '定休';
 }
 
 function populateMenus() {
@@ -86,7 +90,7 @@ function checkClosed() {
   const date = document.getElementById('b-date').value;
   const hint = document.getElementById('b-date-hint');
   if (!date) {
-    hint.textContent = '火曜定休';
+    hint.textContent = closedDayLabel();
     hint.className = 'form-hint';
     return false;
   }
@@ -263,7 +267,8 @@ function initBookPage() {
 
   const dateInput = document.getElementById('b-date');
   dateInput.value = defaultDate();
-  dateInput.min = '2026-05-25';
+  dateInput.min = DEMO_TODAY;
+  document.getElementById('b-date-hint').textContent = closedDayLabel();
   checkClosed();
 
   ['b-date', 'b-time', 'b-menu', 'b-stylist'].forEach((id) => {
