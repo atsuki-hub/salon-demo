@@ -22,7 +22,7 @@
   <main class="container">
     <div class="day-toolbar">
       <button id="prev-day" type="button" aria-label="前日">‹</button>
-      <input type="date" id="day-picker" value="2026-05-25">
+      <input type="date" id="day-picker">
       <button id="next-day" type="button" aria-label="翌日">›</button>
       <button id="today-btn" type="button">今日</button>
       <span class="day-label" id="day-label"></span>
@@ -49,11 +49,8 @@
 
     <div id="week-view" hidden>
       <div class="week-grid" id="week-grid"></div>
-      <p class="period-hint" style="margin-top:0.75rem">
+      <p class="period-hint" style="margin-top:0.75rem" id="week-legend">
         日付ヘッダーをクリックでその日のタイムグリッドへ。セラピスト色：
-        <span class="legend-dot stylist-0"></span> 田中
-        <span class="legend-dot stylist-1"></span> 鈴木
-        <span class="legend-dot stylist-2"></span> 佐藤
       </p>
     </div>
 

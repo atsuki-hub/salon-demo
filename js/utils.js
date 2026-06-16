@@ -112,12 +112,29 @@ function pickGranularity(start, end) {
 }
 
 function periodPresets() {
-  const end = '2026-05-31';
+  // Derive date range from data so the demo adapts automatically to data updates
+  const allDates = RESERVATIONS.map(r => r.date).sort();
+  const lastDate = allDates[allDates.length - 1] || fmtDate(new Date());
+  const lastD = parseDate(lastDate);
+  const ly = lastD.getFullYear();
+  const lm = lastD.getMonth(); // 0-indexed
+
+  const end        = fmtDate(new Date(ly, lm + 1, 0, 12));
+  const thisStart  = fmtDate(new Date(ly, lm,     1, 12));
+  const prevEnd    = fmtDate(new Date(ly, lm,     0, 12));
+  const prevStart  = fmtDate(new Date(ly, lm - 1, 1, 12));
+  const last3Start = fmtDate(new Date(ly, lm - 2, 1, 12));
+  const allStart   = fmtDate(new Date(ly, lm - 5, 1, 12));
+
+  const prevD = parseDate(prevStart);
+  const thisLabel = `${ly}年${lm + 1}月`;
+  const prevLabel = `${prevD.getFullYear()}年${prevD.getMonth() + 1}月`;
+
   return {
-    thisMonth: { label: '今月（2026年5月）', start: '2026-05-01', end: '2026-05-31' },
-    lastMonth: { label: '先月（2026年4月）', start: '2026-04-01', end: '2026-04-30' },
-    last3: { label: '直近3ヶ月', start: '2026-03-01', end },
-    all: { label: '全期間（6ヶ月）', start: '2025-12-01', end },
+    thisMonth: { label: `今月（${thisLabel}）`, start: thisStart, end },
+    lastMonth: { label: `先月（${prevLabel}）`, start: prevStart, end: prevEnd },
+    last3:     { label: '直近3ヶ月', start: last3Start, end },
+    all:       { label: '全期間（6ヶ月）', start: allStart, end },
   };
 }
 

@@ -20,18 +20,25 @@ function calcM1(reservations, start, end) {
   // 曜日情報(週末ハイライト用)
   const dayOfWeek = gran === 'day' ? keys.map((k) => parseDate(k).getDay()) : null;
 
-  // 当月／前月（MoMカード用は常に月単位）
-  const thisStart = '2026-05-01';
-  const thisEnd = '2026-05-31';
-  const lastStart = '2026-04-01';
-  const lastEnd = '2026-04-30';
+  // 当月／前月（MoMカード用は常に月単位・データから動的取得）
+  const allResDate = RESERVATIONS.map(r => r.date).sort();
+  const lastDate = allResDate[allResDate.length - 1] || fmtDate(new Date());
+  const refD = parseDate(lastDate);
+  const ly = refD.getFullYear();
+  const lm = refD.getMonth();
+
+  const thisStart        = fmtDate(new Date(ly, lm, 1, 12));
+  const thisEnd          = fmtDate(new Date(ly, lm + 1, 0, 12));
+  const lastStart        = fmtDate(new Date(ly, lm - 1, 1, 12));
+  const lastEnd          = fmtDate(new Date(ly, lm, 0, 12));
+  const currentMonthLabel = `${ly}年${lm + 1}月`;
 
   const allDone = getCompleted(reservations);
   const thisTotal = filterByPeriod(allDone, thisStart, thisEnd).reduce((s, r) => s + totalRevenue(r), 0);
   const lastTotal = filterByPeriod(allDone, lastStart, lastEnd).reduce((s, r) => s + totalRevenue(r), 0);
   const momPct = lastTotal > 0 ? (thisTotal - lastTotal) / lastTotal : null;
 
-  return { labels, values, dayOfWeek, granularity: gran, granularityLabel, thisTotal, lastTotal, momPct };
+  return { labels, values, dayOfWeek, granularity: gran, granularityLabel, thisTotal, lastTotal, momPct, currentMonthLabel };
 }
 
 function calcM2(reservations, start, end) {

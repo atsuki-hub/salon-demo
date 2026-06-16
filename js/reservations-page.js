@@ -1,7 +1,11 @@
 /** Reservation management page: day timegrid / week / month / list views */
 
 const WEEKDAY = ['日', '月', '火', '水', '木', '金', '土'];
-const TODAY_STR = '2026-05-25';
+// Use the latest reservation date as "today" so the demo always starts on data-rich day
+const TODAY_STR = (() => {
+  const allDates = RESERVATIONS.map(r => r.date).sort();
+  return allDates[allDates.length - 1] || fmtDate(new Date());
+})();
 let currentView = 'grid'; // 'grid' | 'week' | 'month' | 'list'
 
 function timeToMin(t) {
@@ -705,6 +709,7 @@ function renderListView() {
 
 function initPage() {
   document.getElementById('salon-name').textContent = SETTINGS.salonName;
+  document.getElementById('day-picker').value = TODAY_STR;
 
   // Stylist filter for list
   const stylistSel = document.getElementById('filter-stylist');
@@ -729,6 +734,18 @@ function initPage() {
   // List filters
   document.getElementById('filter-stylist').addEventListener('change', renderListView);
   document.getElementById('filter-status').addEventListener('change', renderListView);
+
+  // Build week-view stylist legend dynamically
+  const legendEl = document.getElementById('week-legend');
+  if (legendEl) {
+    legendEl.textContent = '日付ヘッダーをクリックでその日のタイムグリッドへ。セラピスト色：';
+    STYLISTS.forEach((s, i) => {
+      const dot = document.createElement('span');
+      dot.className = `legend-dot stylist-${i}`;
+      legendEl.appendChild(dot);
+      legendEl.appendChild(document.createTextNode(' ' + s.name + '　'));
+    });
+  }
 
   initReservationModal();
   initDetailModal();

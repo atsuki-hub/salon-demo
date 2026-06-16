@@ -53,6 +53,8 @@ function renderDashboard() {
   const m14 = calcM14(filtered, start, end);
 
   // M1 cards
+  const m1LabelEl = document.getElementById('m1-label');
+  if (m1LabelEl) m1LabelEl.textContent = `当月売上（${m1.currentMonthLabel}）`;
   document.getElementById('m1-this').textContent = formatYen(m1.thisTotal);
   const momEl = document.getElementById('m1-mom');
   if (m1.momPct == null) {
@@ -355,8 +357,17 @@ function initStylistFilter() {
   });
 }
 
+function initPeriodOptions() {
+  const presets = periodPresets();
+  Object.entries(presets).forEach(([key, val]) => {
+    const opt = document.querySelector(`#period-preset option[value="${key}"]`);
+    if (opt) opt.textContent = val.label;
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('salon-name').textContent = SETTINGS.salonName;
+  initPeriodOptions();
   initStylistFilter();
   document.getElementById('period-preset').addEventListener('change', renderDashboard);
   document.getElementById('stylist-filter').addEventListener('change', renderDashboard);
