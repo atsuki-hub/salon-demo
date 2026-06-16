@@ -607,11 +607,13 @@ function openDetailModal(reservation) {
     if (idx >= 0) RESERVATIONS.splice(idx, 1);
     closeDetailModal();
     renderDay();
+    showToast('予約を削除しました');
   };
   cancelBtn.onclick = () => {
     reservation.status = 'キャンセル';
     closeDetailModal();
     renderDay();
+    showToast('キャンセル扱いに変更しました');
   };
 }
 
@@ -651,7 +653,64 @@ function initReservationModal() {
     RESERVATIONS.push(r);
     closeReservationModal();
     renderDay();
+    showToast('予約を追加しました', 'success');
   });
+}
+
+/* === Toast notifications === */
+
+function showToast(msg, type = '') {
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement('div');
+  toast.className = 'toast' + (type ? ' ' + type : '');
+  toast.textContent = msg;
+  container.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('show'));
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 250);
+  }, 2800);
+}
+
+/* === CSV export === */
+
+function exportListCSV() {
+  const stylistFilter = document.getElementById('filter-stylist').value;
+  const statusFilter = document.getElementById('filter-status').value;
+  const dateStr = getSelectedDate();
+
+  let list = RESERVATIONS.filter((r) => r.date === dateStr).map(enrichReservation);
+  if (stylistFilter) list = list.filter((r) => r.stylistId === stylistFilter);
+  if (statusFilter) list = list.filter((r) => r.status === statusFilter);
+  list.sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+  const header = ['日付', '開始', '顧客', 'メニュー', '時間', '担当', '指名', '売上', '区分', '状態'];
+  const rows = list.map((r) => [
+    r.date, r.startTime, r.customerName, r.menuName,
+    r.duration + '分', r.stylistName,
+    r.nominated ? '指名' : '',
+    r.techSales + r.retailSales,
+    r.visitType, r.status,
+  ]);
+
+  const csv = [header, ...rows]
+    .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
+    .join('\n');
+  const bom = '﻿'; // UTF-8 BOM for Excel
+  const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `予約_${dateStr}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSVをダウンロードしました', 'success');
 }
 
 /* List view (existing functionality preserved) */
@@ -734,6 +793,7 @@ function initPage() {
   // List filters
   document.getElementById('filter-stylist').addEventListener('change', renderListView);
   document.getElementById('filter-status').addEventListener('change', renderListView);
+  document.getElementById('export-csv').addEventListener('click', exportListCSV);
 
   // Build week-view stylist legend dynamically
   const legendEl = document.getElementById('week-legend');

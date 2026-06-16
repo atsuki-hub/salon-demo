@@ -111,15 +111,16 @@ function renderDashboard() {
     m12El.textContent = formatPct(m12.seatRate);
   }
 
-  // M8 table
+  // M8 table — show all at-risk customers (no artificial limit)
   const tbody = document.querySelector('#m8-table tbody');
   tbody.innerHTML = '';
   if (m8.length === 0) {
     tbody.innerHTML = '<tr><td colspan="4" class="empty">該当なし（90日以内に来店あり）</td></tr>';
   } else {
-    m8.slice(0, 15).forEach((row) => {
+    m8.forEach((row) => {
+      const urgency = row.elapsed >= 180 ? ' class="m8-urgent"' : row.elapsed >= 120 ? ' class="m8-warn"' : '';
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${row.name}</td><td>${row.lastVisit}</td><td>${row.elapsed}日</td><td>${row.stylist}</td>`;
+      tr.innerHTML = `<td${urgency}>${row.name}</td><td>${row.lastVisit}</td><td${urgency}>${row.elapsed}日</td><td>${row.stylist}</td>`;
       tbody.appendChild(tr);
     });
   }

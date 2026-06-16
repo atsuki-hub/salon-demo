@@ -1311,6 +1311,127 @@ footer {
   color: var(--muted);
 }
 
+/* =========================================
+   Toast notifications
+   ========================================= */
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.toast {
+  background: var(--text);
+  color: #fff;
+  padding: 0.7rem 1.1rem;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  box-shadow: 0 4px 14px rgba(44, 36, 32, 0.22);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s, transform 0.2s;
+  max-width: 300px;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.success {
+  background: var(--up);
+}
+
+.toast.error {
+  background: var(--down);
+}
+
+/* =========================================
+   M8 churn alert urgency indicators
+   ========================================= */
+#m8-table tr td.m8-urgent {
+  color: var(--down);
+  font-weight: 600;
+}
+
+#m8-table tr td.m8-warn {
+  color: #b87d2a;
+  font-weight: 500;
+}
+
+/* =========================================
+   CSV export button
+   ========================================= */
+.btn-export {
+  padding: 0.4rem 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--accent-light);
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--accent);
+  transition: background 0.15s;
+  align-self: flex-end;
+}
+
+.btn-export:hover {
+  background: #fbf5ed;
+}
+
+/* =========================================
+   book.html staff navigation link
+   ========================================= */
+.book-staff-nav {
+  margin-top: 0.75rem;
+}
+
+.book-staff-nav a {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.book-staff-nav a:hover {
+  color: var(--accent);
+}
+
+/* =========================================
+   Mobile: week view horizontal scroll
+   ========================================= */
+@media (max-width: 768px) {
+  .week-grid {
+    display: flex;
+    overflow-x: auto;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    scroll-snap-type: x mandatory;
+  }
+
+  .week-day {
+    flex: 0 0 calc(50% - 0.25rem);
+    scroll-snap-align: start;
+    min-height: 200px;
+  }
+
+  .month-grid {
+    font-size: 0.78rem;
+  }
+
+  .month-cell {
+    min-height: 56px;
+    padding: 0.3rem 0.35rem;
+  }
+
+  .day-toolbar {
+    gap: 0.4rem;
+  }
+}
+
 @media (max-width: 640px) {
   .card .value {
     font-size: 1.25rem;
