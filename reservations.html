@@ -42,6 +42,7 @@
     <p class="period-hint" id="closed-hint" hidden>本日は定休日です（火曜定休）</p>
 
     <div id="timegrid-view" class="timegrid-view">
+      <div class="day-summary-bar" id="day-summary-bar" hidden></div>
       <div class="timegrid" id="timegrid"></div>
       <p class="period-hint" style="margin-top:0.75rem">
         空きコマをクリックすると予約追加モーダルが開きます。既存予約のクリックで詳細表示。指名予約は左に濃いラインが入ります。
@@ -80,6 +81,9 @@
             <option value="無断">無断</option>
           </select>
         </div>
+        <label class="filter-toggle-label">
+          <input type="checkbox" id="filter-all-dates"> 全期間表示
+        </label>
         <span class="period-hint" id="res-count">0件</span>
         <button type="button" id="export-csv" class="btn-export">CSV出力</button>
       </div>

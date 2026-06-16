@@ -114,7 +114,28 @@ function updateViewLabel(dateStr) {
   }
 }
 
+function renderDaySummaryBar(dateStr, reservations) {
+  const bar = document.getElementById('day-summary-bar');
+  if (!bar) return;
+  const done   = reservations.filter(r => r.status === '済');
+  const planned= reservations.filter(r => r.status === '予定');
+  const cancel = reservations.filter(r => r.status === 'キャンセル' || r.status === '無断');
+  if (reservations.length === 0) { bar.hidden = true; return; }
+  const sales = done.reduce((s, r) => s + r.techSales + r.retailSales, 0);
+  bar.hidden = false;
+  bar.innerHTML = [
+    `<span class="dsb-item"><span class="dsb-label">合計</span><strong>${reservations.length}件</strong></span>`,
+    `<span class="dsb-sep"></span>`,
+    `<span class="dsb-item dsb-done"><span class="dsb-label">完了</span><strong>${done.length}</strong></span>`,
+    `<span class="dsb-item dsb-plan"><span class="dsb-label">予定</span><strong>${planned.length}</strong></span>`,
+    cancel.length ? `<span class="dsb-item dsb-cancel"><span class="dsb-label">取消</span><strong>${cancel.length}</strong></span>` : '',
+    `<span class="dsb-sep"></span>`,
+    sales > 0 ? `<span class="dsb-item"><span class="dsb-label">売上(済)</span><strong>${formatYen(sales)}</strong></span>` : '',
+  ].join('');
+}
+
 function renderTimegrid(dateStr, todays, isClosed) {
+  renderDaySummaryBar(dateStr, todays);
   const grid = document.getElementById('timegrid');
   grid.innerHTML = '';
   grid.style.setProperty('--stylist-count', STYLISTS.length);
@@ -377,6 +398,9 @@ function switchView(view) {
   document.getElementById('week-view').hidden = view !== 'week';
   document.getElementById('month-view').hidden = view !== 'month';
   document.getElementById('list-view').hidden = view !== 'list';
+  // Hide summary bar when not on grid view
+  const bar = document.getElementById('day-summary-bar');
+  if (bar && view !== 'grid') bar.hidden = true;
   renderDay();
 }
 
@@ -731,9 +755,12 @@ function enrichReservation(r) {
 function renderListView() {
   const stylistFilter = document.getElementById('filter-stylist').value;
   const statusFilter = document.getElementById('filter-status').value;
+  const allDates = document.getElementById('filter-all-dates').checked;
   const dateStr = getSelectedDate();
 
-  let list = RESERVATIONS.filter((r) => r.date === dateStr).map(enrichReservation);
+  let list = allDates
+    ? RESERVATIONS.map(enrichReservation)
+    : RESERVATIONS.filter((r) => r.date === dateStr).map(enrichReservation);
   if (stylistFilter) list = list.filter((r) => r.stylistId === stylistFilter);
   if (statusFilter) list = list.filter((r) => r.status === statusFilter);
 
@@ -812,6 +839,7 @@ function initPage() {
   // List filters
   document.getElementById('filter-stylist').addEventListener('change', renderListView);
   document.getElementById('filter-status').addEventListener('change', renderListView);
+  document.getElementById('filter-all-dates').addEventListener('change', renderListView);
   document.getElementById('export-csv').addEventListener('click', exportListCSV);
 
   // Build week-view stylist legend dynamically
