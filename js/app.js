@@ -111,6 +111,24 @@ function renderDashboard() {
     m12El.textContent = formatPct(m12.seatRate);
   }
 
+  // Cancellation / no-show rates
+  const periodAll = filterByPeriod(filtered, start, end);
+  const totalScheduled = periodAll.length;
+  const cancelledCount = periodAll.filter(r => r.status === 'キャンセル').length;
+  const noshowCount = periodAll.filter(r => r.status === '無断').length;
+  const cancelRate = totalScheduled > 0 ? cancelledCount / totalScheduled : 0;
+  const noshowRate = totalScheduled > 0 ? noshowCount / totalScheduled : 0;
+  document.getElementById('cancel-rate').textContent = formatPct(cancelRate);
+  document.getElementById('cancel-count').textContent = `${cancelledCount}件 / ${totalScheduled}件`;
+  document.getElementById('noshow-rate').textContent = formatPct(noshowRate);
+  document.getElementById('noshow-count').textContent = `${noshowCount}件 / ${totalScheduled}件`;
+
+  // Total & active customers
+  const totalCust = CUSTOMERS.length;
+  const activeCustomers = new Set(getCompleted(RESERVATIONS).map(r => r.customerId)).size;
+  document.getElementById('total-customers').textContent = `${totalCust}名`;
+  document.getElementById('active-customers').textContent = `うち来店実績 ${activeCustomers}名`;
+
   // M8 table — show all at-risk customers (no artificial limit)
   const tbody = document.querySelector('#m8-table tbody');
   tbody.innerHTML = '';
